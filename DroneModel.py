@@ -53,14 +53,14 @@ class Drone:
         
         while t < t_end:
             if 1 < t < 1.1:
-                self.motor1_vel = 1200
+                self.motor1_vel = 1300
                 self.motor2_vel = 1250
                 self.motor3_vel = 1300
                 self.motor4_vel = 1250
             elif 1.1 <= t < 1.2:
-                self.motor1_vel = 1300
+                self.motor1_vel = 1197.9
                 self.motor2_vel = 1250
-                self.motor3_vel = 1200
+                self.motor3_vel = 1197.9
                 self.motor4_vel = 1250
             else:
                 self.motor1_vel = 1250
