@@ -36,7 +36,7 @@ class Drone:
     
     def Control(self, t, y):
         if 1 < t < 1.1:
-            motor_vel = np.array([1300, 1200, 1300, 1200])
+            motor_vel = np.array([1300, 1250, 1300, 1250])
         elif 1.1 < t < 1.2:
             motor_vel = np.array([1200, 1200, 1200, 1200])
         else:
@@ -51,12 +51,12 @@ class Drone:
         angle_vec = np.array([roll, pitch, yaw])
         omega_vec = np.array([omega1, omega2, omega3])
         
+        torque_vec = np.array([self.arm_length*self.thrust_coefficient*(motor_vel[0]**2-motor_vel[2]**2), self.arm_length*self.thrust_coefficient*(motor_vel[1]**2-motor_vel[3]**2), self.b_constant*(motor_vel[0]**2-motor_vel[1]**2+motor_vel[2]**2-motor_vel[3]**2)])
         R_mat = self.frame_conversion_matrix(angle_vec[0], angle_vec[1], angle_vec[2])
         thrust_vec = np.array([0, 0, self.thrust_coefficient * (motor_vel[0]**2+motor_vel[1]**2+motor_vel[2]**2+motor_vel[3]**2)])
         drag_vec = -self.drag * velocity_vec
-        accel_vec = R_mat @ thrust_vec + np.array([0,0,-self.mass*self.gravity]) + drag_vec
-        torque_vec = np.array([self.arm_length*self.thrust_coefficient*(motor_vel[0]**2-motor_vel[2]**2), self.arm_length*self.thrust_coefficient*(motor_vel[1]**2-motor_vel[3]**2), self.b_constant*(motor_vel[0]**2-motor_vel[1]**2+motor_vel[2]**2-motor_vel[3]**2)])
         
+        accel_vec = R_mat @ thrust_vec / self.mass + np.array([0,0,-self.gravity]) + drag_vec/self.mass
         omegadot_vec = np.linalg.inv(self.I) @ (torque_vec - np.cross(omega_vec, (self.I @ omega_vec)))
         angledot_vec = np.linalg.inv(self.omega_conversion_matrix(angle_vec[0], angle_vec[1], angle_vec[2])) @ omega_vec
         
