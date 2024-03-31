@@ -17,11 +17,6 @@ class Drone:
         self.gravity = gravity
         self.rho = rho
         self.disturbance = disturbance
-        
-        self.motor1_vel = 0
-        self.motor2_vel = 0
-        self.motor3_vel = 0
-        self.motor4_vel = 0
     
     def omega_conversion_matrix(self, phi, theta, psi):
         return np.array([[1, 0, np.sin(theta)],
@@ -38,10 +33,10 @@ class Drone:
         if 1 < t < 1.1:
             motor_vel = np.array([1300, 1250, 1300, 1250])
         elif 1.1 < t < 1.2:
-            motor_vel = np.array([1200, 1200, 1200, 1200])
+            motor_vel = np.array([1198.5, 1250, 1198.5, 1250])
         else:
             motor_vel = np.array([1250, 1250, 1250, 1250])
-        
+
         return self.Equations_of_Motion(y, motor_vel)
     
     def Equations_of_Motion(self, y, motor_vel):
@@ -64,7 +59,7 @@ class Drone:
     
     def Simulate(self, t_end):
         
-        self.data = integrate.solve_ivp(self.Control, [0, t_end], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], t_eval=np.linspace(0, int(t_end), int(t_end * 50)))
+        self.data = integrate.solve_ivp(self.Control, [0, t_end], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], t_eval=np.linspace(0, int(t_end), int(t_end * 50)), max_step=0.02)
         
     def Display(self):
         self.time_store = self.data.t
@@ -103,6 +98,6 @@ class Drone:
             
 
 test = Drone(0.1, (0.01, 0.01, 0.1), 0.1, 0.000001, 0.6)
-test.Simulate(10)
+test.Simulate(2)
 test.Display()
 
