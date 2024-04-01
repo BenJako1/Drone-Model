@@ -31,11 +31,11 @@ class Drone:
     
     def Control(self, t, y):
         if 1 < t < 1.1:
-            motor_vel = np.array([1198.5, 1198.5, 1300, 1300])
+            motor_vel = np.array([1000, 1000, 1100, 1100])
         elif 1.1 < t < 1.2:
-            motor_vel = np.array([1300, 1300, 1204, 1204])
+            motor_vel = np.array([1100, 1100, 1000, 1000])
         else:
-            motor_vel = np.array([1250, 1250, 1250, 1250])
+            motor_vel = np.array([1000, 1000, 1000, 1000])
 
         return self.Equations_of_Motion(y, motor_vel)
     
@@ -58,8 +58,7 @@ class Drone:
         return vx, vy, vz, accel_vec[0], accel_vec[1], accel_vec[2], angledot_vec[0], angledot_vec[1], angledot_vec[2], omegadot_vec[0], omegadot_vec[1], omegadot_vec[2]
     
     def Simulate(self, t_end):
-        
-        self.data = integrate.solve_ivp(self.Control, [0, t_end], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], t_eval=np.linspace(0, int(t_end), int(t_end * 50)), max_step=0.02)
+        self.data = integrate.solve_ivp(self.Control, [0, t_end], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], t_eval=np.linspace(0, int(t_end), int(t_end * 50)), max_step=0.001)
         
     def Display(self):
         self.time_store = self.data.t
@@ -98,6 +97,6 @@ class Drone:
             
 
 test = Drone(0.1, (0.01, 0.01, 0.1), 0.1, 0.000001, 0.6)
-test.Simulate(2)
+test.Simulate(4)
 test.Display()
 
