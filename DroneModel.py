@@ -33,17 +33,24 @@ class Drone:
                       [np.sin(phi)*np.sin(theta), np.cos(phi)*np.sin(theta), np.cos(theta)]])
     
     def Control(self, t, y):
-        pass
-    
+        if 1 < t < 1.1:
+            motor_vel = np.array([1000, 1000, 1000, 1000])
+        elif 1.1 <= t < 1.2:
+            motor_vel = np.array([1000, 1000, 1000, 1000])
+        else:
+           motor_vel = np.array([1000, 1000, 1000, 1000])
+        
+        return motor_vel
+        
     def Simulate(self, dt, t_end):
         t = 0
-        self.position_vec = np.zeros(3)
-        self.velocity_vec = np.zeros(3)
-        self.accel_vec = np.zeros(3)
-        self.angle_vec = np.zeros(3)
-        self.omega_vec = np.zeros(3)
-        self.thrust_vec = np.zeros(3)
-        self.torque_vec = np.zeros(3)
+        position_vec = np.zeros(3)
+        velocity_vec = np.zeros(3)
+        accel_vec = np.zeros(3)
+        angle_vec = np.zeros(3)
+        omega_vec = np.zeros(3)
+        thrust_vec = np.zeros(3)
+        torque_vec = np.zeros(3)
         
         self.position_store = self.position_vec
         self.velocity_store = self.velocity_vec
@@ -52,21 +59,19 @@ class Drone:
         self.time_store = [t]
         
         while t < t_end:
-            if 1 < t < 1.1:
-                self.motor1_vel = 1300
-                self.motor2_vel = 1250
-                self.motor3_vel = 1300
-                self.motor4_vel = 1250
-            elif 1.1 <= t < 1.2:
-                self.motor1_vel = 1197.9
-                self.motor2_vel = 1250
-                self.motor3_vel = 1197.9
-                self.motor4_vel = 1250
-            else:
-                self.motor1_vel = 1250
-                self.motor2_vel = 1250
-                self.motor3_vel = 1250
-                self.motor4_vel = 1250
+            
+            k1_x = velocity_vec[0]
+            k1_y = velocity_vec[1]
+            k1_z = velocity_vec[2]
+            
+            k1_vx = accel_vec[0]
+            k1_vy = accel_vec[1]
+            k1_vz = accel_vec[2]
+            
+            k1_roll = angledot_vec[0]
+            k1_pitch = angledot_vec[1]
+            k1_yaw = angledot_vec[2]
+            
             
             R_mat = self.frame_conversion_matrix(self.angle_vec[0], self.angle_vec[1], self.angle_vec[2])
             self.thrust_vec[2] = self.thrust_coefficient * (self.motor1_vel**2+self.motor2_vel**2+self.motor3_vel**2+self.motor4_vel**2)
@@ -87,22 +92,22 @@ class Drone:
             t += dt
             
             self.time_store.append(t)
-            self.position_store = np.vstack([self.position_store, self.position_vec])
-            self.angle_store = np.vstack([self.angle_store, self.angle_vec])
-            self.torque_store = np.vstack([self.torque_store, self.torque_vec])
+            self.position = np.vstack([self.position_store, self.position_vec])
+            self.angle = np.vstack([self.angle_store, self.angle_vec])
+            self.torque = np.vstack([self.torque_store, self.torque_vec])
         
     def Display(self):
             fig, ax = plt.subplots(3, 2, figsize=(10,10))
 
-            ax[0, 0].plot(self.time_store, self.angle_store[:,0], label='roll')
+            ax[0, 0].plot(self.time_store, self.angle[:,0], label='roll')
             ax[0, 0].set_title('roll angle')
             ax[0, 0].grid()
 
-            ax[1, 0].plot(self.time_store, self.angle_store[:,1], label='pitch')
+            ax[1, 0].plot(self.time_store, self.angle[:,1], label='pitch')
             ax[1, 0].set_title('pitch angle')
             ax[1, 0].grid()
 
-            ax[2, 0].plot(self.time_store, self.angle_store[:,2], label='yaw')
+            ax[2, 0].plot(self.time_store, self.angle[:,2], label='yaw')
             ax[2, 0].set_title('yaw angle')
             ax[2, 0].grid()
 
